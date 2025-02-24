@@ -12,7 +12,7 @@ This repository contains the C++ implementation of an AI algorithm to predict th
    sudo apt-get install libmlpack-dev
 
 ## Clone the Repository
-git clone https://github.com/SlimmShadyyy/rtl-depth-prediction-cpp.git
+git clone https://github.com/SlimmShadyyy/RTL-Timing-Optimizer.git
 cd rtl-depth-prediction-cpp
 
 ## Compilation
