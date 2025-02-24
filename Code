@@ -1,0 +1,44 @@
+#include <mlpack/core.hpp>
+#include <mlpack/methods/random_forest/random_forest.hpp>
+#include <mlpack/core/cv/k_fold_cv.hpp>
+#include <mlpack/core/cv/metrics/mae.hpp>
+#include <iostream>
+
+using namespace mlpack;
+using namespace mlpack::tree;
+using namespace mlpack::cv;
+
+int main()
+{
+    // Load dataset (replace with your dataset path)
+    arma::mat dataset;
+    data::Load("rtl_dataset.csv", dataset, true);
+
+    // Split features and labels
+    arma::mat features = dataset.submat(0, 0, dataset.n_rows - 2, dataset.n_cols - 1); // All rows except last
+    arma::rowvec labels = dataset.row(dataset.n_rows - 1); // Last row is the target
+
+    // Split into training and testing sets
+    arma::mat trainFeatures, testFeatures;
+    arma::rowvec trainLabels, testLabels;
+    data::Split(features, labels, trainFeatures, testFeatures, trainLabels, testLabels, 0.2);
+
+    // Initialize Random Forest model
+    RandomForest<> rf(trainFeatures, trainLabels, 10, 100); // 10 classes (dummy), 100 trees
+
+    // Train the model
+    rf.Train(trainFeatures, trainLabels);
+
+    // Predict on test set
+    arma::rowvec predictions;
+    rf.Classify(testFeatures, predictions);
+
+    // Evaluate model
+    double mae = MAE::Evaluate(predictions, testLabels);
+    std::cout << "Mean Absolute Error: " << mae << std::endl;
+
+    // Save model for future use
+    data::Save("combinational_depth_predictor.bin", "model", rf, false);
+
+    return 0;
+}
